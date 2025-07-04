@@ -1,5 +1,5 @@
 
-import { MessageCircle, Clock, Users, FileText } from 'lucide-react';
+import { MessageCircle, Clock, Users, FileText, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
