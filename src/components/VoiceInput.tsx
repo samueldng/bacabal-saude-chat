@@ -28,9 +28,9 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ onVoiceMessage, disabled }) => 
     <div className="flex items-center">
       {isRecording ? (
         <div className="flex items-center space-x-2">
-          <div className="flex items-center bg-red-100 px-3 py-1 rounded-full">
-            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse mr-2" />
-            <span className="text-sm text-red-600 font-medium">
+          <div className="flex items-center bg-nova-bacabal-green/10 px-3 py-1 rounded-full border border-nova-bacabal-green/20">
+            <div className="w-2 h-2 bg-nova-bacabal-green rounded-full animate-pulse mr-2" />
+            <span className="text-sm text-nova-bacabal-green font-medium">
               {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}
             </span>
           </div>
@@ -38,7 +38,7 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ onVoiceMessage, disabled }) => 
             variant="ghost"
             size="icon"
             onClick={stopRecording}
-            className="h-10 w-10 text-red-500 hover:bg-red-50"
+            className="h-10 w-10 text-nova-bacabal-green hover:bg-nova-bacabal-green/10 rounded-full"
           >
             <Square className="h-5 w-5" />
           </Button>
@@ -49,7 +49,7 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ onVoiceMessage, disabled }) => 
           size="icon"
           onClick={startRecording}
           disabled={disabled}
-          className="h-10 w-10 text-blue-600 hover:bg-blue-50 disabled:opacity-50"
+          className="h-10 w-10 text-nova-bacabal-orange hover:bg-nova-bacabal-orange/10 disabled:opacity-50 rounded-full transition-colors"
         >
           <Mic className="h-5 w-5" />
         </Button>

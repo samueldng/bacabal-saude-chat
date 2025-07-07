@@ -9,7 +9,7 @@ const Index = () => {
   const [chatStarted, setChatStarted] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
+    <div className="min-h-screen bg-gradient-to-br from-nova-bacabal-cyan/5 via-white to-nova-bacabal-purple/5">
       <ChatProvider>
         {!chatStarted ? (
           <>

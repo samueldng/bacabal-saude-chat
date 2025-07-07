@@ -24,9 +24,9 @@ const ChatMessage = ({ message, onOptionClick, onSuggestionClick }: ChatMessageP
   return (
     <div className={`flex ${isBot ? 'justify-start' : 'justify-end'} mb-3`}>
       <div className={`flex items-end space-x-2 max-w-[85%] ${isBot ? 'flex-row' : 'flex-row-reverse space-x-reverse'}`}>
-        {/* Avatar */}
+        {/* Avatar com cores Nova Bacabal */}
         <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center shadow-sm ${
-          isBot ? 'bg-blue-600' : 'bg-green-600'
+          isBot ? 'bg-nova-bacabal-purple' : 'bg-nova-bacabal-orange'
         }`}>
           {isBot ? (
             <Bot className="h-4 w-4 text-white" />
@@ -35,17 +35,17 @@ const ChatMessage = ({ message, onOptionClick, onSuggestionClick }: ChatMessageP
           )}
         </div>
         
-        {/* Message Bubble */}
+        {/* Message Bubble com nova paleta */}
         <div className={`relative rounded-2xl px-4 py-3 shadow-sm max-w-full ${
           isBot 
-            ? 'bg-white border border-gray-200 rounded-bl-sm' 
-            : 'bg-blue-600 text-white rounded-br-sm'
+            ? 'bg-white border border-gray-100 rounded-bl-sm' 
+            : 'bg-nova-bacabal-orange text-white rounded-br-sm shadow-md'
         }`}>
-          {/* Tail for WhatsApp-like appearance */}
+          {/* Tail melhorado */}
           <div className={`absolute bottom-0 w-3 h-4 ${
             isBot 
-              ? 'left-0 -ml-2 bg-white border-l border-b border-gray-200 rounded-bl-lg'
-              : 'right-0 -mr-2 bg-blue-600 rounded-br-lg'
+              ? 'left-0 -ml-2 bg-white border-l border-b border-gray-100 rounded-bl-lg'
+              : 'right-0 -mr-2 bg-nova-bacabal-orange rounded-br-lg'
           }`} style={{
             clipPath: isBot 
               ? 'polygon(0 0, 100% 100%, 0 100%)'
@@ -54,22 +54,22 @@ const ChatMessage = ({ message, onOptionClick, onSuggestionClick }: ChatMessageP
           
           <div className="relative z-10">
             <p className={`text-sm leading-relaxed whitespace-pre-line ${
-              isBot ? 'text-gray-800' : 'text-white'
+              isBot ? 'text-nova-bacabal-purple' : 'text-white'
             }`}>
               {message.content}
             </p>
             
-            {/* Options for initial message */}
+            {/* Options com nova paleta */}
             {message.type === 'options' && message.options && (
               <div className="mt-4 space-y-2">
-                <p className="text-xs text-gray-600 mb-3 font-medium">Como posso ajudar você?</p>
+                <p className="text-xs text-nova-bacabal-cyan mb-3 font-medium">Como posso ajudar você?</p>
                 {message.options.map((option, index) => (
                   <Button
                     key={index}
                     variant="outline"
                     size="sm"
                     onClick={() => onOptionClick?.(option)}
-                    className="w-full justify-start text-left h-auto py-3 px-4 text-gray-700 border-gray-300 hover:bg-blue-50 hover:border-blue-300 rounded-lg transition-colors"
+                    className="w-full justify-start text-left h-auto py-3 px-4 text-nova-bacabal-purple border-nova-bacabal-orange/20 hover:bg-nova-bacabal-orange/5 hover:border-nova-bacabal-orange/40 rounded-lg transition-all duration-200"
                   >
                     <span className="text-sm">{option}</span>
                   </Button>
@@ -77,11 +77,11 @@ const ChatMessage = ({ message, onOptionClick, onSuggestionClick }: ChatMessageP
               </div>
             )}
 
-            {/* Suggestions */}
+            {/* Suggestions com nova paleta */}
             {message.suggestions && message.suggestions.length > 0 && (
               <div className="mt-3 space-y-2">
                 <p className={`text-xs mb-2 font-medium ${
-                  isBot ? 'text-gray-500' : 'text-blue-100'
+                  isBot ? 'text-nova-bacabal-cyan' : 'text-white/80'
                 }`}>
                   Sugestões:
                 </p>
@@ -91,10 +91,10 @@ const ChatMessage = ({ message, onOptionClick, onSuggestionClick }: ChatMessageP
                       key={index}
                       variant="ghost"
                       size="sm"
-                      className={`text-xs h-8 px-3 rounded-full transition-colors ${
+                      className={`text-xs h-8 px-3 rounded-full transition-all duration-200 ${
                         isBot 
-                          ? 'text-blue-600 hover:text-blue-800 hover:bg-blue-50 bg-blue-50/70'
-                          : 'text-white hover:bg-white/20 bg-white/10'
+                          ? 'text-nova-bacabal-orange hover:text-nova-bacabal-orange hover:bg-nova-bacabal-orange/10 bg-nova-bacabal-orange/5'
+                          : 'text-white hover:bg-white/20 bg-white/10 border border-white/20'
                       }`}
                       onClick={() => onSuggestionClick?.(suggestion)}
                     >
@@ -107,7 +107,7 @@ const ChatMessage = ({ message, onOptionClick, onSuggestionClick }: ChatMessageP
             
             {/* Timestamp */}
             <div className={`text-xs mt-2 ${
-              isBot ? 'text-gray-500' : 'text-blue-100'
+              isBot ? 'text-muted-foreground' : 'text-white/70'
             }`}>
               {message.timestamp.toLocaleTimeString('pt-BR', { 
                 hour: '2-digit', 
