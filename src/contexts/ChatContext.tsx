@@ -72,8 +72,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       let response;
       
       if (apiKey) {
-        // Usar API do Gemini
-        const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+        // Usar API do Gemini com modelo atualizado
+        const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -90,12 +90,38 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 
                 Forneça uma resposta útil e, quando apropriado, sugira ações específicas que o usuário pode tomar.`
               }]
-            }]
+            }],
+            generationConfig: {
+              temperature: 0.7,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 1024,
+            },
+            safetySettings: [
+              {
+                category: "HARM_CATEGORY_HARASSMENT",
+                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+              },
+              {
+                category: "HARM_CATEGORY_HATE_SPEECH",
+                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+              },
+              {
+                category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+              },
+              {
+                category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+              }
+            ]
           })
         });
 
         if (!geminiResponse.ok) {
-          throw new Error('Erro na API do Gemini');
+          const errorData = await geminiResponse.json();
+          console.error('Erro na API do Gemini:', errorData);
+          throw new Error(`Erro na API do Gemini: ${errorData.error?.message || 'Erro desconhecido'}`);
         }
 
         const data = await geminiResponse.json();
@@ -151,6 +177,13 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return {
         text: 'Para consultar seus exames, você precisa:\n\n• CPF e cartão SUS\n• Número do protocolo (se tiver)\n\nOs resultados ficam disponíveis em até 15 dias úteis.',
         suggestions: ['Onde retirar exames', 'Prazo dos resultados', 'Documentos necessários']
+      };
+    }
+    
+    if (normalizedInput.includes('unidade') || normalizedInput.includes('ubs')) {
+      return {
+        text: 'Principais unidades de saúde em Bacabal:\n\n• UBS Centro - Rua 7 de Setembro\n• UBS São Francisco - Bairro São Francisco\n• UBS Vila Nova - Bairro Vila Nova\n\nHorário: Segunda a Sexta, 7h às 17h',
+        suggestions: ['Agendar consulta', 'Ver outros serviços', 'Contato direto']
       };
     }
     
