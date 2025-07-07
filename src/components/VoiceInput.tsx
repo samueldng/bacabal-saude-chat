@@ -38,7 +38,7 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ onVoiceMessage, disabled }) => 
             variant="ghost"
             size="icon"
             onClick={stopRecording}
-            className="h-10 w-10 text-nova-bacabal-green hover:bg-nova-bacabal-green/10 rounded-full"
+            className="h-10 w-10 text-nova-bacabal-green hover:bg-nova-bacabal-green/10 rounded-full transition-all duration-200"
           >
             <Square className="h-5 w-5" />
           </Button>
@@ -49,7 +49,7 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ onVoiceMessage, disabled }) => 
           size="icon"
           onClick={startRecording}
           disabled={disabled}
-          className="h-10 w-10 text-nova-bacabal-orange hover:bg-nova-bacabal-orange/10 disabled:opacity-50 rounded-full transition-colors"
+          className="h-10 w-10 text-nova-bacabal-orange hover:bg-gradient-orange hover:text-white disabled:opacity-50 rounded-full transition-all duration-200 shadow-sm hover:shadow-orange"
         >
           <Mic className="h-5 w-5" />
         </Button>

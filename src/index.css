@@ -3,87 +3,88 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Nova Bacabal - Sistema de Cores
-Baseado na identidade visual da Secretaria de Saúde
-Estratégia 80/20: 80% cores neutras, 20% cores vibrantes
+/* Nova Bacabal - Sistema de Cores Focado no Laranja
+Estratégia: Laranja como protagonista com gradientes modernos
 */
 
 @layer base {
   :root {
     /* Cores Neutras - Base Clean (80%) */
     --background: 0 0% 100%; /* Branco principal */
-    --foreground: 262 73% 35%; /* Roxo sóbrio para textos */
+    --foreground: 215 25% 27%; /* Cinza escuro moderno para textos */
     --card: 0 0% 100%; /* Branco para cards */
-    --card-foreground: 262 73% 35%; /* Roxo sóbrio */
+    --card-foreground: 215 25% 27%; /* Cinza escuro */
 
-    /* Cores da Nova Bacabal */
-    --nova-bacabal-orange: 32 100% 48%; /* #F57C00 - Laranja Vibrante */
-    --nova-bacabal-purple: 262 73% 35%; /* #4527A0 - Roxo Sóbrio */
-    --nova-bacabal-green: 122 39% 49%; /* #4CAF50 - Verde Vitalidade */
-    --nova-bacabal-cyan: 188 100% 42%; /* #00BCD4 - Azul Ciano */
-    --nova-bacabal-neutral: 0 0% 96%; /* #F5F5F5 - Cinza claro */
+    /* Paleta Nova Bacabal - Foco no Laranja */
+    --nova-bacabal-orange: 32 100% 50%; /* #FF8C00 - Laranja Principal */
+    --nova-bacabal-orange-light: 35 100% 60%; /* #FFA500 - Laranja Claro */
+    --nova-bacabal-orange-dark: 28 100% 45%; /* #E67E00 - Laranja Escuro */
+    --nova-bacabal-purple: 250 69% 61%; /* #7C3AED - Roxo Suporte */
+    --nova-bacabal-green: 142 71% 45%; /* #10B981 - Verde Sucesso */
+    --nova-bacabal-cyan: 188 86% 53%; /* #22D3EE - Azul Informação */
+    --nova-bacabal-neutral: 0 0% 98%; /* #FAFAFA - Cinza ultra claro */
 
-    /* Sistema de Cores Aplicado */
-    --primary: 32 100% 48%; /* Laranja para ações principais */
+    /* Sistema de Cores Aplicado - Laranja Protagonista */
+    --primary: 32 100% 50%; /* Laranja principal */
     --primary-foreground: 0 0% 100%; /* Branco para contraste */
     
-    --secondary: 0 0% 96%; /* Cinza claro neutro */
-    --secondary-foreground: 262 73% 35%; /* Roxo sóbrio */
+    --secondary: 0 0% 98%; /* Cinza ultra claro */
+    --secondary-foreground: 215 25% 27%; /* Cinza escuro */
 
     --muted: 0 0% 96%; /* Cinza claro para elementos discretos */
-    --muted-foreground: 0 0% 33%; /* Cinza escuro para textos secundários */
+    --muted-foreground: 215 15% 45%; /* Cinza médio para textos secundários */
 
-    --accent: 188 100% 42%; /* Azul ciano para informações */
+    --accent: 32 100% 50%; /* Laranja para acentos */
     --accent-foreground: 0 0% 100%; /* Branco para contraste */
 
-    --success: 122 39% 49%; /* Verde para sucessos */
+    --success: 142 71% 45%; /* Verde para sucessos */
     --success-foreground: 0 0% 100%; /* Branco para contraste */
 
     --destructive: 0 84% 60%; /* Vermelho para erros */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 89%; /* Bordas suaves */
-    --input: 0 0% 89%; /* Campos de entrada */
-    --ring: 32 100% 48%; /* Foco laranja */
+    --border: 220 13% 91%; /* Bordas suaves */
+    --input: 220 13% 91%; /* Campos de entrada */
+    --ring: 32 100% 50%; /* Foco laranja */
 
     --popover: 0 0% 100%;
-    --popover-foreground: 262 73% 35%;
+    --popover-foreground: 215 25% 27%;
 
-    --radius: 0.75rem; /* Bordas mais suaves e modernas */
+    --radius: 1rem; /* Bordas mais arredondadas para modernidade */
 
-    /* Cores específicas para o chat */
-    --chat-bg: 0 0% 97%; /* Fundo do chat levemente off-white */
-    --chat-user-bg: 32 100% 48%; /* Mensagens do usuário em laranja */
-    --chat-bot-bg: 0 0% 100%; /* Mensagens do bot em branco */
-    --chat-header-bg: 262 73% 35%; /* Header em roxo sóbrio */
+    /* Cores específicas para o chat - Foco no Laranja */
+    --chat-bg: 32 30% 98%; /* Fundo levemente alaranjado */
+    --chat-user-bg: linear-gradient(135deg, hsl(32 100% 50%), hsl(35 100% 60%)); /* Gradiente laranja para usuário */
+    --chat-bot-bg: 0 0% 100%; /* Branco para bot */
+    --chat-header-bg: linear-gradient(135deg, hsl(32 100% 50%), hsl(28 100% 45%)); /* Gradiente laranja para header */
   }
 
   .dark {
-    --background: 262 73% 12%;
-    --foreground: 0 0% 98%;
-    --card: 262 73% 12%;
-    --card-foreground: 0 0% 98%;
-    --primary: 32 100% 48%;
+    --background: 215 28% 17%;
+    --foreground: 210 20% 98%;
+    --card: 215 28% 17%;
+    --card-foreground: 210 20% 98%;
+    --primary: 32 100% 50%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 262 50% 20%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 262 50% 20%;
-    --muted-foreground: 0 0% 65%;
-    --accent: 188 100% 42%;
+    --secondary: 215 28% 25%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 28% 25%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 32 100% 50%;
     --accent-foreground: 0 0% 100%;
-    --success: 122 39% 49%;
+    --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
     --destructive: 0 62% 47%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 262 50% 20%;
-    --input: 262 50% 20%;
-    --ring: 32 100% 48%;
-    --popover: 262 73% 12%;
-    --popover-foreground: 0 0% 98%;
-    --chat-bg: 262 73% 8%;
-    --chat-user-bg: 32 100% 48%;
-    --chat-bot-bg: 262 50% 20%;
-    --chat-header-bg: 262 73% 35%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 28% 25%;
+    --input: 215 28% 25%;
+    --ring: 32 100% 50%;
+    --popover: 215 28% 17%;
+    --popover-foreground: 210 20% 98%;
+    --chat-bg: 215 28% 12%;
+    --chat-user-bg: linear-gradient(135deg, hsl(32 100% 50%), hsl(35 100% 60%));
+    --chat-bot-bg: 215 28% 25%;
+    --chat-header-bg: linear-gradient(135deg, hsl(32 100% 50%), hsl(28 100% 45%));
   }
 }
 
@@ -97,10 +98,42 @@ Estratégia 80/20: 80% cores neutras, 20% cores vibrantes
   }
 }
 
-/* Classes utilitárias para as cores da Nova Bacabal */
+/* Classes utilitárias para gradientes modernos */
 @layer utilities {
+  .bg-gradient-orange {
+    background: linear-gradient(135deg, hsl(32 100% 50%), hsl(35 100% 60%));
+  }
+  
+  .bg-gradient-orange-dark {
+    background: linear-gradient(135deg, hsl(28 100% 45%), hsl(32 100% 50%));
+  }
+  
+  .bg-gradient-orange-subtle {
+    background: linear-gradient(135deg, hsl(32 30% 98%), hsl(35 20% 96%));
+  }
+  
+  .text-gradient-orange {
+    background: linear-gradient(135deg, hsl(32 100% 50%), hsl(35 100% 60%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .border-gradient-orange {
+    border: 2px solid;
+    border-image: linear-gradient(135deg, hsl(32 100% 50%), hsl(35 100% 60%)) 1;
+  }
+  
   .bg-nova-bacabal-orange {
     background-color: hsl(var(--nova-bacabal-orange));
+  }
+  
+  .bg-nova-bacabal-orange-light {
+    background-color: hsl(var(--nova-bacabal-orange-light));
+  }
+  
+  .bg-nova-bacabal-orange-dark {
+    background-color: hsl(var(--nova-bacabal-orange-dark));
   }
   
   .bg-nova-bacabal-purple {
@@ -136,6 +169,14 @@ Estratégia 80/20: 80% cores neutras, 20% cores vibrantes
   }
   
   .bg-chat-surface {
-    background-color: hsl(var(--chat-bg));
+    background: linear-gradient(135deg, hsl(32 15% 99%), hsl(35 10% 97%));
+  }
+  
+  .shadow-orange {
+    box-shadow: 0 10px 25px -3px rgba(255, 140, 0, 0.1), 0 4px 6px -2px rgba(255, 140, 0, 0.05);
+  }
+  
+  .shadow-orange-lg {
+    box-shadow: 0 20px 25px -5px rgba(255, 140, 0, 0.15), 0 10px 10px -5px rgba(255, 140, 0, 0.1);
   }
 }

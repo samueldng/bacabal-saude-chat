@@ -56,24 +56,24 @@ const ChatInterface = () => {
 
   return (
     <div className="flex flex-col h-screen max-h-screen bg-chat-surface">
-      {/* Header com as cores da Nova Bacabal */}
-      <div className="flex items-center justify-between px-4 py-3 bg-nova-bacabal-purple text-white shadow-lg">
+      {/* Header com gradiente laranja moderno */}
+      <div className="flex items-center justify-between px-4 py-3 bg-gradient-orange text-white shadow-orange-lg">
         <div className="flex items-center space-x-3">
           <Button
             variant="ghost"
             size="sm"
             onClick={handleBackToWelcome}
-            className="text-white hover:bg-white/20 p-2 rounded-full"
+            className="text-white hover:bg-white/20 p-2 rounded-full transition-all duration-200"
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-nova-bacabal-orange rounded-full flex items-center justify-center shadow-md">
+            <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg border border-white/30">
               <Bot className="h-6 w-6 text-white" />
             </div>
             <div>
               <h3 className="font-semibold text-lg">Nova Bacabal</h3>
-              <p className="text-xs text-white/80">
+              <p className="text-xs text-white/90">
                 {apiKey ? 'IA Conectada • Online' : 'Modo Local • Online'}
               </p>
             </div>
@@ -84,19 +84,19 @@ const ChatInterface = () => {
             variant="ghost"
             size="sm"
             onClick={() => setShowSettings(!showSettings)}
-            className="text-white hover:bg-white/20 p-2 rounded-full"
+            className="text-white hover:bg-white/20 p-2 rounded-full transition-all duration-200"
           >
             <MoreVertical className="h-5 w-5" />
           </Button>
         </div>
       </div>
 
-      {/* Settings Panel com nova paleta */}
+      {/* Settings Panel com gradiente sutil */}
       {showSettings && (
-        <div className="p-4 border-b bg-gradient-to-r from-nova-bacabal-cyan/5 to-nova-bacabal-purple/5 shadow-sm">
+        <div className="p-4 border-b bg-gradient-orange-subtle shadow-sm backdrop-blur-sm">
           <div className="max-w-md mx-auto space-y-4">
             <div>
-              <label className="text-sm font-medium text-nova-bacabal-purple mb-2 block">
+              <label className="text-sm font-medium text-nova-bacabal-orange mb-2 block">
                 Chave da API Gemini (opcional):
               </label>
               <div className="flex space-x-2">
@@ -106,13 +106,13 @@ const ChatInterface = () => {
                     value={tempApiKey}
                     onChange={(e) => setTempApiKey(e.target.value)}
                     placeholder="Cole sua API key do Google Gemini aqui"
-                    className="pr-10 bg-white border-gray-200 focus:border-nova-bacabal-orange focus:ring-nova-bacabal-orange/20"
+                    className="pr-10 bg-white border-nova-bacabal-orange/20 focus:border-nova-bacabal-orange focus:ring-nova-bacabal-orange/20 rounded-xl"
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent text-nova-bacabal-purple"
+                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent text-nova-bacabal-orange"
                     onClick={() => setShowApiKey(!showApiKey)}
                   >
                     {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -121,16 +121,16 @@ const ChatInterface = () => {
               </div>
             </div>
             <div className="flex space-x-2">
-              <Button size="sm" onClick={handleSaveApiKey} className="flex-1 bg-nova-bacabal-orange hover:bg-nova-bacabal-orange/90">
+              <Button size="sm" onClick={handleSaveApiKey} className="flex-1 bg-gradient-orange hover:bg-gradient-orange-dark shadow-orange rounded-xl">
                 Salvar Configurações
               </Button>
-              <Button size="sm" variant="outline" onClick={clearChat} className="border-nova-bacabal-purple/20 text-nova-bacabal-purple hover:bg-nova-bacabal-purple/5">
+              <Button size="sm" variant="outline" onClick={clearChat} className="border-nova-bacabal-orange/30 text-nova-bacabal-orange hover:bg-nova-bacabal-orange/5 rounded-xl">
                 Limpar Chat
               </Button>
             </div>
             {!apiKey && (
-              <div className="bg-nova-bacabal-cyan/10 border border-nova-bacabal-cyan/20 rounded-lg p-3">
-                <p className="text-xs text-nova-bacabal-purple">
+              <div className="bg-nova-bacabal-orange/10 border border-nova-bacabal-orange/30 rounded-xl p-3">
+                <p className="text-xs text-nova-bacabal-orange">
                   💡 O chat funciona sem API key, mas com a chave do Gemini as respostas serão mais inteligentes
                 </p>
               </div>
@@ -139,11 +139,11 @@ const ChatInterface = () => {
         </div>
       )}
 
-      {/* Messages Area com fundo personalizado */}
+      {/* Messages Area com fundo gradiente sutil */}
       <div className="flex-1 overflow-hidden bg-chat-surface relative">
         {/* Background pattern sutil */}
-        <div className="absolute inset-0 opacity-[0.02]" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%234527A0' fill-opacity='0.1'%3E%3Cpath d='M30 30c0-8.3-6.7-15-15-15s-15 6.7-15 15 6.7 15 15 15 15-6.7 15-15zm15 0c0-8.3-6.7-15-15-15s-15 6.7-15 15 6.7 15 15 15 15-6.7 15-15z'/%3E%3C/g%3E%3C/svg%3E")`,
+        <div className="absolute inset-0 opacity-[0.015]" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23FF8C00' fill-opacity='0.05'%3E%3Cpath d='M40 40c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm20 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z'/%3E%3C/g%3E%3C/svg%3E")`,
         }} />
         
         <ScrollArea className="h-full">
@@ -158,14 +158,14 @@ const ChatInterface = () => {
             ))}
             {isLoading && (
               <div className="flex justify-start">
-                <div className="bg-white rounded-lg p-3 shadow-sm max-w-xs border">
+                <div className="bg-white rounded-2xl p-4 shadow-orange max-w-xs border border-nova-bacabal-orange/10">
                   <div className="flex items-center space-x-2 text-muted-foreground">
-                    <Bot className="h-4 w-4 text-nova-bacabal-purple" />
+                    <Bot className="h-4 w-4 text-nova-bacabal-orange" />
                     <span className="text-sm">Digitando</span>
                     <div className="flex space-x-1">
-                      <div className="w-1 h-1 bg-nova-bacabal-orange rounded-full animate-bounce" />
-                      <div className="w-1 h-1 bg-nova-bacabal-orange rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-                      <div className="w-1 h-1 bg-nova-bacabal-orange rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                      <div className="w-2 h-2 bg-nova-bacabal-orange rounded-full animate-bounce" />
+                      <div className="w-2 h-2 bg-nova-bacabal-orange rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
+                      <div className="w-2 h-2 bg-nova-bacabal-orange rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
                     </div>
                   </div>
                 </div>
@@ -176,16 +176,16 @@ const ChatInterface = () => {
         </ScrollArea>
       </div>
 
-      {/* Quick Actions com novas cores */}
-      <div className="px-4 py-2 bg-white border-t border-gray-200">
+      {/* Quick Actions com design moderno */}
+      <div className="px-4 py-2 bg-white/80 backdrop-blur-sm border-t border-nova-bacabal-orange/10">
         <QuickActions onActionClick={handleSendMessage} />
       </div>
 
-      {/* Input Area com nova paleta */}
-      <div className="p-4 bg-white border-t border-gray-200">
-        <div className="flex items-end space-x-2 max-w-4xl mx-auto">
+      {/* Input Area com gradiente e sombra moderna */}
+      <div className="p-4 bg-white/90 backdrop-blur-sm border-t border-nova-bacabal-orange/10">
+        <div className="flex items-end space-x-3 max-w-4xl mx-auto">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center bg-gray-50 rounded-full px-4 py-2 border border-gray-200 focus-within:border-nova-bacabal-orange transition-colors">
+            <div className="flex items-center bg-white rounded-full px-5 py-3 border-2 border-nova-bacabal-orange/20 focus-within:border-nova-bacabal-orange shadow-orange transition-all duration-200">
               <Input
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
@@ -204,7 +204,7 @@ const ChatInterface = () => {
             <Button 
               onClick={() => handleSendMessage()}
               disabled={!inputValue.trim() || isLoading}
-              className="bg-nova-bacabal-orange hover:bg-nova-bacabal-orange/90 h-12 w-12 rounded-full shadow-lg flex-shrink-0 transition-all duration-200 hover:shadow-xl"
+              className="bg-gradient-orange hover:bg-gradient-orange-dark h-12 w-12 rounded-full shadow-orange-lg flex-shrink-0 transition-all duration-200 hover:shadow-xl hover:scale-105"
               size="icon"
             >
               <Send className="h-5 w-5" />
@@ -212,7 +212,7 @@ const ChatInterface = () => {
           )}
         </div>
         
-        <p className="text-xs text-muted-foreground mt-2 text-center">
+        <p className="text-xs text-muted-foreground mt-3 text-center">
           🚨 Em caso de emergência, ligue 192 (SAMU) ou procure a unidade mais próxima
         </p>
       </div>

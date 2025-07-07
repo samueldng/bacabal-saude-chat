@@ -22,30 +22,30 @@ const ChatMessage = ({ message, onOptionClick, onSuggestionClick }: ChatMessageP
   const isBot = message.role === 'assistant';
 
   return (
-    <div className={`flex ${isBot ? 'justify-start' : 'justify-end'} mb-3`}>
+    <div className={`flex ${isBot ? 'justify-start' : 'justify-end'} mb-4`}>
       <div className={`flex items-end space-x-2 max-w-[85%] ${isBot ? 'flex-row' : 'flex-row-reverse space-x-reverse'}`}>
-        {/* Avatar com cores Nova Bacabal */}
-        <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center shadow-sm ${
-          isBot ? 'bg-nova-bacabal-purple' : 'bg-nova-bacabal-orange'
+        {/* Avatar com gradientes modernos */}
+        <div className={`flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center shadow-lg ${
+          isBot ? 'bg-white border-2 border-nova-bacabal-orange/20' : 'bg-gradient-orange'
         }`}>
           {isBot ? (
-            <Bot className="h-4 w-4 text-white" />
+            <Bot className="h-5 w-5 text-nova-bacabal-orange" />
           ) : (
-            <User className="h-4 w-4 text-white" />
+            <User className="h-5 w-5 text-white" />
           )}
         </div>
         
-        {/* Message Bubble com nova paleta */}
-        <div className={`relative rounded-2xl px-4 py-3 shadow-sm max-w-full ${
+        {/* Message Bubble com gradientes e sombras modernas */}
+        <div className={`relative rounded-2xl px-4 py-3 max-w-full shadow-lg ${
           isBot 
-            ? 'bg-white border border-gray-100 rounded-bl-sm' 
-            : 'bg-nova-bacabal-orange text-white rounded-br-sm shadow-md'
+            ? 'bg-white border border-nova-bacabal-orange/10 rounded-bl-sm shadow-orange' 
+            : 'bg-gradient-orange text-white rounded-br-sm shadow-orange-lg'
         }`}>
-          {/* Tail melhorado */}
+          {/* Tail moderno */}
           <div className={`absolute bottom-0 w-3 h-4 ${
             isBot 
-              ? 'left-0 -ml-2 bg-white border-l border-b border-gray-100 rounded-bl-lg'
-              : 'right-0 -mr-2 bg-nova-bacabal-orange rounded-br-lg'
+              ? 'left-0 -ml-2 bg-white border-l border-b border-nova-bacabal-orange/10 rounded-bl-lg'
+              : 'right-0 -mr-2 bg-gradient-orange rounded-br-lg'
           }`} style={{
             clipPath: isBot 
               ? 'polygon(0 0, 100% 100%, 0 100%)'
@@ -54,22 +54,22 @@ const ChatMessage = ({ message, onOptionClick, onSuggestionClick }: ChatMessageP
           
           <div className="relative z-10">
             <p className={`text-sm leading-relaxed whitespace-pre-line ${
-              isBot ? 'text-nova-bacabal-purple' : 'text-white'
+              isBot ? 'text-gray-800' : 'text-white'
             }`}>
               {message.content}
             </p>
             
-            {/* Options com nova paleta */}
+            {/* Options com design moderno */}
             {message.type === 'options' && message.options && (
               <div className="mt-4 space-y-2">
-                <p className="text-xs text-nova-bacabal-cyan mb-3 font-medium">Como posso ajudar você?</p>
+                <p className="text-xs text-nova-bacabal-orange mb-3 font-medium">Como posso ajudar você?</p>
                 {message.options.map((option, index) => (
                   <Button
                     key={index}
                     variant="outline"
                     size="sm"
                     onClick={() => onOptionClick?.(option)}
-                    className="w-full justify-start text-left h-auto py-3 px-4 text-nova-bacabal-purple border-nova-bacabal-orange/20 hover:bg-nova-bacabal-orange/5 hover:border-nova-bacabal-orange/40 rounded-lg transition-all duration-200"
+                    className="w-full justify-start text-left h-auto py-3 px-4 text-gray-700 border-nova-bacabal-orange/20 hover:bg-gradient-orange hover:text-white hover:border-nova-bacabal-orange/40 rounded-xl transition-all duration-200 shadow-sm"
                   >
                     <span className="text-sm">{option}</span>
                   </Button>
@@ -77,11 +77,11 @@ const ChatMessage = ({ message, onOptionClick, onSuggestionClick }: ChatMessageP
               </div>
             )}
 
-            {/* Suggestions com nova paleta */}
+            {/* Suggestions com design moderno */}
             {message.suggestions && message.suggestions.length > 0 && (
               <div className="mt-3 space-y-2">
                 <p className={`text-xs mb-2 font-medium ${
-                  isBot ? 'text-nova-bacabal-cyan' : 'text-white/80'
+                  isBot ? 'text-nova-bacabal-orange' : 'text-white/90'
                 }`}>
                   Sugestões:
                 </p>
@@ -91,10 +91,10 @@ const ChatMessage = ({ message, onOptionClick, onSuggestionClick }: ChatMessageP
                       key={index}
                       variant="ghost"
                       size="sm"
-                      className={`text-xs h-8 px-3 rounded-full transition-all duration-200 ${
+                      className={`text-xs h-8 px-3 rounded-full transition-all duration-200 shadow-sm ${
                         isBot 
-                          ? 'text-nova-bacabal-orange hover:text-nova-bacabal-orange hover:bg-nova-bacabal-orange/10 bg-nova-bacabal-orange/5'
-                          : 'text-white hover:bg-white/20 bg-white/10 border border-white/20'
+                          ? 'text-nova-bacabal-orange hover:text-white hover:bg-gradient-orange bg-nova-bacabal-orange/10 border border-nova-bacabal-orange/20'
+                          : 'text-white hover:bg-white/20 bg-white/10 border border-white/30'
                       }`}
                       onClick={() => onSuggestionClick?.(suggestion)}
                     >
@@ -107,7 +107,7 @@ const ChatMessage = ({ message, onOptionClick, onSuggestionClick }: ChatMessageP
             
             {/* Timestamp */}
             <div className={`text-xs mt-2 ${
-              isBot ? 'text-muted-foreground' : 'text-white/70'
+              isBot ? 'text-gray-500' : 'text-white/80'
             }`}>
               {message.timestamp.toLocaleTimeString('pt-BR', { 
                 hour: '2-digit', 
