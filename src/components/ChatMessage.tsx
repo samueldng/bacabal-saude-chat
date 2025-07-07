@@ -2,15 +2,25 @@
 import { User, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Message } from './ChatInterface';
+
+interface Message {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
+  type?: 'text' | 'options';
+  options?: string[];
+  suggestions?: string[];
+}
 
 interface ChatMessageProps {
   message: Message;
   onOptionClick?: (option: string) => void;
+  onSuggestionClick?: (suggestion: string) => void;
 }
 
-const ChatMessage = ({ message, onOptionClick }: ChatMessageProps) => {
-  const isBot = message.sender === 'bot';
+const ChatMessage = ({ message, onOptionClick, onSuggestionClick }: ChatMessageProps) => {
+  const isBot = message.role === 'assistant';
 
   return (
     <div className={`flex ${isBot ? 'justify-start' : 'justify-end'} mb-4`}>
@@ -30,7 +40,7 @@ const ChatMessage = ({ message, onOptionClick }: ChatMessageProps) => {
             ? 'bg-white border-gray-200' 
             : 'bg-blue-600 text-white border-blue-600'
         }`}>
-          <p className="text-sm">{message.text}</p>
+          <p className="text-sm whitespace-pre-line">{message.content}</p>
           
           {message.type === 'options' && message.options && (
             <div className="mt-3 space-y-2">
@@ -43,6 +53,23 @@ const ChatMessage = ({ message, onOptionClick }: ChatMessageProps) => {
                   className="w-full justify-start text-left h-auto py-2 px-3 text-gray-700 border-gray-300 hover:bg-gray-50"
                 >
                   {option}
+                </Button>
+              ))}
+            </div>
+          )}
+
+          {message.suggestions && message.suggestions.length > 0 && (
+            <div className="mt-3 space-y-1">
+              <p className="text-xs text-gray-500 mb-2">Sugestões:</p>
+              {message.suggestions.map((suggestion, index) => (
+                <Button
+                  key={index}
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs h-7 text-blue-600 hover:text-blue-800 hover:bg-blue-50 mr-1 mb-1 bg-blue-50/50"
+                  onClick={() => onSuggestionClick?.(suggestion)}
+                >
+                  {suggestion}
                 </Button>
               ))}
             </div>
