@@ -65,16 +65,34 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const callAIProvider = async (content: string, config: ApiConfig): Promise<{ text: string; suggestions?: string[] }> => {
     const systemPrompt = `VOCÊ É O ASSISTENTE VIRTUAL DA SAÚDE DE BACABAL
 
-PERSONA: Você é amigável, prestativo, empático e direto. Fale como um atendente local conversando com um vizinho. Use linguagem simples e clara, evitando termos técnicos.
+PERSONA: Seja formal, prestativo, empático e direto. Atendimento de excelência com linguagem clara e profissional, evitando termos técnicos desnecessários.
 
-FORMATO: Seja breve, use parágrafos curtos ou listas. Sempre termine com uma pergunta interativa. Use emojis sutis: 📍 endereços, 🗓️ consultas, ✅ confirmações, 🤔 dúvidas, 🚑 emergências.
+FORMATO: Respostas breves e objetivas. Use parágrafos curtos. Termine com pergunta de confirmação. Emojis sutis: 📍 endereços, 🗓️ consultas, ✅ confirmações, 🤔 dúvidas, 🚑 emergências.
 
-OBJETIVO: Forneça informações básicas sobre serviços da Secretaria de Saúde de Bacabal. Se não souber, direcione para atendimento humano.
+OBJETIVO: Fornecer informações precisas sobre serviços da Secretaria de Saúde de Bacabal. Para dúvidas não cobertas, direcione para atendimento presencial.
 
-BASE DE CONHECIMENTO:
-- CONSULTAS/EXAMES: "Vá na UBS mais próxima com cartão SUS e documento. O profissional fará o encaminhamento 👍"
-- TFD: "Programa para tratamento fora de Bacabal. Precisa de laudo médico. Procure a Secretaria de Saúde ✅"
-- UNIDADES: Secretaria (R. Filomeno Parga, 570), Hospital Geral (R. Magalhães de Almeida, 687 - PARTOS AQUI), UPA (atendimento materno-infantil, mas SEM partos), UBS Centro (R. Osvaldo Cruz), etc.
+BASE DE CONHECIMENTO COMPLETA:
+
+CONSULTAS/EXAMES: "Vá à UBS mais próxima com cartão SUS e documento. O profissional fará o encaminhamento necessário 👍"
+
+TFD: "Programa de Tratamento Fora de Domicílio. Necessário laudo médico. Procure a Secretaria de Saúde ✅"
+
+UNIDADES DE SAÚDE:
+- Secretaria Municipal: R. Filomeno Parga, 570
+- Hospital Geral: R. Magalhães de Almeida, 687 (LOCAL DOS PARTOS)
+- UPA: Atendimento materno-infantil (SEM partos)
+- UBS Centro: R. Osvaldo Cruz
+- UBS Juçaral: R. Dois
+- UBS Areia: R. São Vicente de Paula, 566
+- UBS Cohab I: Av. Américo de Sousa, 20
+- UBS Pedro Alves Santos: Estr. Bela Vista, 250
+- UBS Trizidela: 2ª R. Rezna Araújo
+- UBS Areal: Av. João Alberto, 1690-1726
+- UBS Terra do Sol: José Reis Lacerda Ribeiro
+- UBS Alto Bandeirantes: R. Nova
+- UBS Vila São João: R. Três, 59
+
+INFORMAÇÃO CRÍTICA: Partos APENAS no Hospital Geral, não na UPA.
 
 Pergunta: ${content}`;
 
@@ -224,44 +242,120 @@ Pergunta: ${content}`;
   const getLocalResponse = async (userInput: string): Promise<{ text: string; suggestions?: string[] }> => {
     const normalizedInput = userInput.toLowerCase();
     
-    if (normalizedInput.includes('agendar') || normalizedInput.includes('consulta')) {
+    // Detecta consultas e agendamentos
+    if (normalizedInput.includes('agendar') || normalizedInput.includes('consulta') || normalizedInput.includes('marcar')) {
       return {
-        text: 'Para marcar consultas, vá na UBS mais próxima com seu cartão SUS e documento! 📍 O profissional fará o encaminhamento necessário. 👍\n\nFicou claro? Precisa do endereço de alguma unidade?',
-        suggestions: ['Ver unidades próximas', 'Documentos necessários', 'Horários de funcionamento']
+        text: 'Para agendar consultas: vá à UBS mais próxima com cartão SUS e documento. O profissional fará o encaminhamento. 📍\n\nPrecisa de endereços?',
+        suggestions: ['Ver unidades', 'Documentos necessários', 'Horários']
       };
     }
     
-    if (normalizedInput.includes('exame')) {
+    // Detecta exames
+    if (normalizedInput.includes('exame') || normalizedInput.includes('resultado')) {
       return {
-        text: 'Para consultar exames, leve:\n\n• CPF e cartão SUS 📄\n• Número do protocolo (se tiver) 📋\n\nResultados em até 15 dias úteis! Consegui te ajudar? 🤔',
-        suggestions: ['Onde retirar exames', 'Prazo dos resultados', 'Documentos necessários']
+        text: 'Para exames, leve:\n• CPF e cartão SUS 📄\n• Protocolo (se tiver)\n\nResultado: até 15 dias úteis. Esclareceu?',
+        suggestions: ['Onde retirar', 'Prazo', 'Documentos']
       };
     }
 
-    if (normalizedInput.includes('tfd') || normalizedInput.includes('tratamento fora')) {
+    // Detecta TFD
+    if (normalizedInput.includes('tfd') || normalizedInput.includes('tratamento fora') || normalizedInput.includes('fora de domicilio')) {
       return {
-        text: 'O TFD é uma ajuda de custo da prefeitura para tratamento fora de Bacabal! ✅\n\nVocê precisa:\n• Laudo médico indicando a necessidade ✈️\n• Ir na Secretaria de Saúde com o laudo\n\nFicou claro?',
-        suggestions: ['Documentos para TFD', 'Endereço da Secretaria', 'Outras informações']
+        text: 'TFD: auxílio para tratamento fora de Bacabal. ✅\n\nNecessário:\n• Laudo médico\n• Ir à Secretaria de Saúde\n\nFicou claro?',
+        suggestions: ['Documentos TFD', 'Endereço Secretaria', 'Mais info']
       };
     }
     
+    // Detecta busca por UBS específicas
+    if (normalizedInput.includes('centro') && (normalizedInput.includes('ubs') || normalizedInput.includes('posto'))) {
+      return {
+        text: 'UBS Centro: R. Osvaldo Cruz 📍\nHorário: Segunda a Sexta, 7h às 17h\n\nAjudei?',
+        suggestions: ['Agendar consulta', 'Outras unidades', 'Contato']
+      };
+    }
+    
+    if (normalizedInput.includes('juçaral') || normalizedInput.includes('jucaral')) {
+      return {
+        text: 'UBS Juçaral: R. Dois 📍\nHorário: Segunda a Sexta, 7h às 17h\n\nPrecisa de mais informações?',
+        suggestions: ['Agendar consulta', 'Outras unidades', 'Contato']
+      };
+    }
+    
+    if (normalizedInput.includes('areia')) {
+      return {
+        text: 'UBS Areia: R. São Vicente de Paula, 566 📍\nHorário: Segunda a Sexta, 7h às 17h\n\nAjudei?',
+        suggestions: ['Agendar consulta', 'Outras unidades', 'Contato']
+      };
+    }
+    
+    if (normalizedInput.includes('cohab')) {
+      return {
+        text: 'UBS Cohab I: Av. Américo de Sousa, 20 📍\nHorário: Segunda a Sexta, 7h às 17h\n\nEsclareceu?',
+        suggestions: ['Agendar consulta', 'Outras unidades', 'Contato']
+      };
+    }
+    
+    if (normalizedInput.includes('pedro alves') || normalizedInput.includes('santos')) {
+      return {
+        text: 'UBS Pedro Alves Santos: Estr. Bela Vista, 250 📍\nHorário: Segunda a Sexta, 7h às 17h\n\nAjudei?',
+        suggestions: ['Agendar consulta', 'Outras unidades', 'Contato']
+      };
+    }
+    
+    if (normalizedInput.includes('trizidela')) {
+      return {
+        text: 'UBS Trizidela: 2ª R. Rezna Araújo 📍\nHorário: Segunda a Sexta, 7h às 17h\n\nPrecisa de mais informações?',
+        suggestions: ['Agendar consulta', 'Outras unidades', 'Contato']
+      };
+    }
+    
+    if (normalizedInput.includes('areal')) {
+      return {
+        text: 'UBS Areal: Av. João Alberto, 1690-1726 📍\nHorário: Segunda a Sexta, 7h às 17h\n\nAjudei?',
+        suggestions: ['Agendar consulta', 'Outras unidades', 'Contato']
+      };
+    }
+    
+    if (normalizedInput.includes('terra do sol') || normalizedInput.includes('jose reis') || normalizedInput.includes('lacerda')) {
+      return {
+        text: 'UBS Terra do Sol (José Reis Lacerda Ribeiro) 📍\nHorário: Segunda a Sexta, 7h às 17h\n\nEsclareceu?',
+        suggestions: ['Agendar consulta', 'Outras unidades', 'Contato']
+      };
+    }
+    
+    if (normalizedInput.includes('alto bandeirantes') || normalizedInput.includes('bandeirantes')) {
+      return {
+        text: 'UBS Alto Bandeirantes: R. Nova 📍\nHorário: Segunda a Sexta, 7h às 17h\n\nAjudei?',
+        suggestions: ['Agendar consulta', 'Outras unidades', 'Contato']
+      };
+    }
+    
+    if (normalizedInput.includes('vila são joão') || normalizedInput.includes('vila sao joao') || normalizedInput.includes('são joão')) {
+      return {
+        text: 'UBS Vila São João: R. Três, 59 📍\nHorário: Segunda a Sexta, 7h às 17h\n\nPrecisa de mais informações?',
+        suggestions: ['Agendar consulta', 'Outras unidades', 'Contato']
+      };
+    }
+    
+    // Detecta busca geral por unidades
     if (normalizedInput.includes('unidade') || normalizedInput.includes('ubs') || normalizedInput.includes('posto')) {
       return {
-        text: 'Principais unidades em Bacabal:\n\n📍 UBS Centro - R. Osvaldo Cruz\n📍 Hospital Geral - R. Magalhães de Almeida (PARTOS aqui!)\n📍 UPA - Atendimento materno-infantil\n\nHorário: Segunda a Sexta, 7h às 17h. Quer endereço específico?',
-        suggestions: ['Agendar consulta', 'Ver mais unidades', 'Contato direto']
+        text: 'Unidades de saúde em Bacabal:\n\n📍 UBS Centro - R. Osvaldo Cruz\n📍 Hospital Geral - R. Magalhães de Almeida\n📍 UPA - Atendimento materno-infantil\n\nPrecisa de endereço específico?',
+        suggestions: ['Ver todas UBS', 'Agendar consulta', 'Contato']
       };
     }
 
-    if (normalizedInput.includes('parto') || normalizedInput.includes('nascer') || normalizedInput.includes('bebê')) {
+    // Detecta partos
+    if (normalizedInput.includes('parto') || normalizedInput.includes('nascer') || normalizedInput.includes('bebê') || normalizedInput.includes('bebe')) {
       return {
-        text: 'Para partos, vá no Hospital Geral de Bacabal! 🚑\n\n📍 R. Magalhães de Almeida, 687 - Centro\n\nA UPA cuida da saúde da mãe e bebê, mas os partos são no Hospital Geral, tá bom? Ficou claro?',
-        suggestions: ['Endereço completo', 'Documentos necessários', 'Outras informações']
+        text: 'Partos: APENAS no Hospital Geral! 🚑\n\n📍 R. Magalhães de Almeida, 687 - Centro\n\nUPA: atende mãe/bebê, mas SEM partos. Esclareceu?',
+        suggestions: ['Endereço Hospital', 'Documentos', 'Mais info']
       };
     }
     
     return {
-      text: 'Olá! Posso te ajudar com: 👋\n\n🗓️ Agendamento de consultas\n📄 Consulta de exames\n✈️ TFD (Tratamento Fora de Domicílio)\n📍 Unidades de saúde\n📞 Contato com atendentes\n\nO que você precisa?',
-      suggestions: ['Agendar consulta', 'Consultar exames', 'Unidades de saúde']
+      text: 'Serviços disponíveis:\n\n🗓️ Agendamento de consultas\n📄 Consulta de exames\n✈️ TFD\n📍 Unidades de saúde\n\nO que precisa?',
+      suggestions: ['Agendar consulta', 'Consultar exames', 'Ver unidades']
     };
   };
 
