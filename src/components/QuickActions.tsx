@@ -28,8 +28,8 @@ const QuickActions = ({ onActionClick }: QuickActionsProps) => {
     },
     {
       icon: <Phone className="h-4 w-4" />,
-      label: 'Contato',
-      action: 'Falar com atendente humano',
+      label: 'Farmácias',
+      action: 'Farmácias de plantão hoje',
       color: 'text-nova-bacabal-orange'
     }
   ];
