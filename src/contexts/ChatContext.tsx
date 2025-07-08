@@ -174,7 +174,12 @@ Pergunta: ${content}`;
       let response;
       
       if (apiConfig.key) {
-        response = await callAIProvider(content, apiConfig);
+        try {
+          response = await callAIProvider(content, apiConfig);
+        } catch (error) {
+          console.warn('Erro na API, usando modo local:', error);
+          response = await getLocalResponse(content);
+        }
       } else {
         response = await getLocalResponse(content);
       }
@@ -190,13 +195,27 @@ Pergunta: ${content}`;
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: 'Desculpe, ocorreu um erro. Tente novamente ou entre em contato pelo telefone (99) 3621-1234.',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, errorMessage]);
+      
+      // Fallback para resposta local em caso de erro
+      try {
+        const fallbackResponse = await getLocalResponse(content);
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: fallbackResponse.text,
+          timestamp: new Date(),
+          suggestions: fallbackResponse.suggestions
+        };
+        setMessages(prev => [...prev, assistantMessage]);
+      } catch (fallbackError) {
+        const errorMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: 'Desculpe, ocorreu um erro. Tente novamente ou entre em contato pelo telefone (99) 3621-1234.',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, errorMessage]);
+      }
     } finally {
       setIsLoading(false);
     }
