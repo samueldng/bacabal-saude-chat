@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useCallback } from 'react';
 
 interface Message {
@@ -11,11 +10,16 @@ interface Message {
   suggestions?: string[];
 }
 
+interface ApiConfig {
+  provider: 'gemini' | 'openai' | 'claude';
+  key: string;
+}
+
 interface ChatContextType {
   messages: Message[];
   isLoading: boolean;
-  apiKey: string;
-  setApiKey: (key: string) => void;
+  apiConfig: ApiConfig;
+  setApiConfig: (config: ApiConfig) => void;
   sendMessage: (content: string) => Promise<void>;
   clearChat: () => void;
 }
@@ -35,25 +39,123 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     {
       id: '1',
       role: 'assistant',
-      content: 'Olá! Sou o assistente digital da SEMUS Bacabal. Como posso ajudá-lo hoje?',
+      content: 'Olá! Sou o Assistente Virtual da Saúde de Bacabal 👋 Como posso te ajudar hoje?',
       timestamp: new Date(),
       type: 'options',
       options: [
-        'Agendar consulta',
-        'Consultar exames',
-        'Informações sobre programas',
-        'Unidades de saúde',
-        'Falar com atendente'
+        'Agendar consulta 🗓️',
+        'Consultar exames 📄',
+        'TFD (Tratamento Fora de Domicílio) ✈️',
+        'Unidades de saúde 📍',
+        'Falar com atendente 📞'
       ]
     }
   ]);
   const [isLoading, setIsLoading] = useState(false);
-  const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini-api-key') || '');
+  const [apiConfig, setApiConfigState] = useState<ApiConfig>(() => {
+    const storedConfig = localStorage.getItem('ai-api-config');
+    return storedConfig ? JSON.parse(storedConfig) : { provider: 'gemini', key: '' };
+  });
 
-  const updateApiKey = useCallback((key: string) => {
-    setApiKey(key);
-    localStorage.setItem('gemini-api-key', key);
+  const updateApiConfig = useCallback((config: ApiConfig) => {
+    setApiConfigState(config);
+    localStorage.setItem('ai-api-config', JSON.stringify(config));
   }, []);
+
+  const callAIProvider = async (content: string, config: ApiConfig): Promise<{ text: string; suggestions?: string[] }> => {
+    const systemPrompt = `VOCÊ É O ASSISTENTE VIRTUAL DA SAÚDE DE BACABAL
+
+PERSONA: Você é amigável, prestativo, empático e direto. Fale como um atendente local conversando com um vizinho. Use linguagem simples e clara, evitando termos técnicos.
+
+FORMATO: Seja breve, use parágrafos curtos ou listas. Sempre termine com uma pergunta interativa. Use emojis sutis: 📍 endereços, 🗓️ consultas, ✅ confirmações, 🤔 dúvidas, 🚑 emergências.
+
+OBJETIVO: Forneça informações básicas sobre serviços da Secretaria de Saúde de Bacabal. Se não souber, direcione para atendimento humano.
+
+BASE DE CONHECIMENTO:
+- CONSULTAS/EXAMES: "Vá na UBS mais próxima com cartão SUS e documento. O profissional fará o encaminhamento 👍"
+- TFD: "Programa para tratamento fora de Bacabal. Precisa de laudo médico. Procure a Secretaria de Saúde ✅"
+- UNIDADES: Secretaria (R. Filomeno Parga, 570), Hospital Geral (R. Magalhães de Almeida, 687 - PARTOS AQUI), UPA (atendimento materno-infantil, mas SEM partos), UBS Centro (R. Osvaldo Cruz), etc.
+
+Pergunta: ${content}`;
+
+    if (config.provider === 'gemini') {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${config.key}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: systemPrompt }] }],
+          generationConfig: { temperature: 0.7, topK: 40, topP: 0.95, maxOutputTokens: 1024 },
+          safetySettings: [
+            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+            { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+            { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" }
+          ]
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Erro ${config.provider}: ${errorData.error?.message || 'Erro desconhecido'}`);
+      }
+
+      const data = await response.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Desculpe, não consegui processar sua solicitação.';
+      return { text, suggestions: ['Horários de funcionamento', 'Documentos necessários', 'Outras informações'] };
+    }
+
+    if (config.provider === 'openai') {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${config.key}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'gpt-4.1-2025-04-14',
+          messages: [{ role: 'user', content: systemPrompt }],
+          temperature: 0.7,
+          max_tokens: 1024
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Erro ${config.provider}: ${errorData.error?.message || 'Erro desconhecido'}`);
+      }
+
+      const data = await response.json();
+      const text = data.choices?.[0]?.message?.content || 'Desculpe, não consegui processar sua solicitação.';
+      return { text, suggestions: ['Horários de funcionamento', 'Documentos necessários', 'Outras informações'] };
+    }
+
+    if (config.provider === 'claude') {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': config.key,
+          'Content-Type': 'application/json',
+          'anthropic-version': '2023-06-01'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1024,
+          messages: [{ role: 'user', content: systemPrompt }]
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Erro ${config.provider}: ${errorData.error?.message || 'Erro desconhecido'}`);
+      }
+
+      const data = await response.json();
+      const text = data.content?.[0]?.text || 'Desculpe, não consegui processar sua solicitação.';
+      return { text, suggestions: ['Horários de funcionamento', 'Documentos necessários', 'Outras informações'] };
+    }
+
+    throw new Error('Provedor de IA não suportado');
+  };
 
   const sendMessage = useCallback(async (content: string) => {
     if (!content.trim()) return;
@@ -71,72 +173,9 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       let response;
       
-      if (apiKey) {
-        // Usar API do Gemini com modelo atualizado
-        const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            contents: [{
-              parts: [{
-                text: `Você é um assistente digital da SEMUS (Secretaria Municipal de Saúde) de Bacabal - MA. 
-                Responda de forma educada, profissional e focada em questões de saúde pública.
-                
-                Contexto: O usuário está perguntando sobre serviços de saúde pública em Bacabal.
-                
-                Pergunta do usuário: ${content}
-                
-                Forneça uma resposta útil e, quando apropriado, sugira ações específicas que o usuário pode tomar.`
-              }]
-            }],
-            generationConfig: {
-              temperature: 0.7,
-              topK: 40,
-              topP: 0.95,
-              maxOutputTokens: 1024,
-            },
-            safetySettings: [
-              {
-                category: "HARM_CATEGORY_HARASSMENT",
-                threshold: "BLOCK_MEDIUM_AND_ABOVE"
-              },
-              {
-                category: "HARM_CATEGORY_HATE_SPEECH",
-                threshold: "BLOCK_MEDIUM_AND_ABOVE"
-              },
-              {
-                category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                threshold: "BLOCK_MEDIUM_AND_ABOVE"
-              },
-              {
-                category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-                threshold: "BLOCK_MEDIUM_AND_ABOVE"
-              }
-            ]
-          })
-        });
-
-        if (!geminiResponse.ok) {
-          const errorData = await geminiResponse.json();
-          console.error('Erro na API do Gemini:', errorData);
-          throw new Error(`Erro na API do Gemini: ${errorData.error?.message || 'Erro desconhecido'}`);
-        }
-
-        const data = await geminiResponse.json();
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Desculpe, não consegui processar sua solicitação.';
-        
-        response = {
-          text,
-          suggestions: [
-            'Horários de funcionamento',
-            'Documentos necessários',
-            'Outras informações'
-          ]
-        };
+      if (apiConfig.key) {
+        response = await callAIProvider(content, apiConfig);
       } else {
-        // Fallback para respostas locais
         response = await getLocalResponse(content);
       }
 
@@ -161,34 +200,48 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setIsLoading(false);
     }
-  }, [apiKey]);
+  }, [apiConfig]);
 
   const getLocalResponse = async (userInput: string): Promise<{ text: string; suggestions?: string[] }> => {
     const normalizedInput = userInput.toLowerCase();
     
     if (normalizedInput.includes('agendar') || normalizedInput.includes('consulta')) {
       return {
-        text: 'Para agendar uma consulta, você pode:\n\n• Ligar para (99) 3621-1234\n• Comparecer à UBS mais próxima\n• Usar o aplicativo ConecteSUS\n\nPrecisa do endereço de alguma unidade?',
+        text: 'Para marcar consultas, vá na UBS mais próxima com seu cartão SUS e documento! 📍 O profissional fará o encaminhamento necessário. 👍\n\nFicou claro? Precisa do endereço de alguma unidade?',
         suggestions: ['Ver unidades próximas', 'Documentos necessários', 'Horários de funcionamento']
       };
     }
     
     if (normalizedInput.includes('exame')) {
       return {
-        text: 'Para consultar seus exames, você precisa:\n\n• CPF e cartão SUS\n• Número do protocolo (se tiver)\n\nOs resultados ficam disponíveis em até 15 dias úteis.',
+        text: 'Para consultar exames, leve:\n\n• CPF e cartão SUS 📄\n• Número do protocolo (se tiver) 📋\n\nResultados em até 15 dias úteis! Consegui te ajudar? 🤔',
         suggestions: ['Onde retirar exames', 'Prazo dos resultados', 'Documentos necessários']
       };
     }
-    
-    if (normalizedInput.includes('unidade') || normalizedInput.includes('ubs')) {
+
+    if (normalizedInput.includes('tfd') || normalizedInput.includes('tratamento fora')) {
       return {
-        text: 'Principais unidades de saúde em Bacabal:\n\n• UBS Centro - Rua 7 de Setembro\n• UBS São Francisco - Bairro São Francisco\n• UBS Vila Nova - Bairro Vila Nova\n\nHorário: Segunda a Sexta, 7h às 17h',
-        suggestions: ['Agendar consulta', 'Ver outros serviços', 'Contato direto']
+        text: 'O TFD é uma ajuda de custo da prefeitura para tratamento fora de Bacabal! ✅\n\nVocê precisa:\n• Laudo médico indicando a necessidade ✈️\n• Ir na Secretaria de Saúde com o laudo\n\nFicou claro?',
+        suggestions: ['Documentos para TFD', 'Endereço da Secretaria', 'Outras informações']
+      };
+    }
+    
+    if (normalizedInput.includes('unidade') || normalizedInput.includes('ubs') || normalizedInput.includes('posto')) {
+      return {
+        text: 'Principais unidades em Bacabal:\n\n📍 UBS Centro - R. Osvaldo Cruz\n📍 Hospital Geral - R. Magalhães de Almeida (PARTOS aqui!)\n📍 UPA - Atendimento materno-infantil\n\nHorário: Segunda a Sexta, 7h às 17h. Quer endereço específico?',
+        suggestions: ['Agendar consulta', 'Ver mais unidades', 'Contato direto']
+      };
+    }
+
+    if (normalizedInput.includes('parto') || normalizedInput.includes('nascer') || normalizedInput.includes('bebê')) {
+      return {
+        text: 'Para partos, vá no Hospital Geral de Bacabal! 🚑\n\n📍 R. Magalhães de Almeida, 687 - Centro\n\nA UPA cuida da saúde da mãe e bebê, mas os partos são no Hospital Geral, tá bom? Ficou claro?',
+        suggestions: ['Endereço completo', 'Documentos necessários', 'Outras informações']
       };
     }
     
     return {
-      text: 'Posso ajudar com informações sobre:\n\n• Agendamento de consultas\n• Consulta de exames\n• Programas de saúde\n• Unidades de saúde\n• Contato com atendentes',
+      text: 'Olá! Posso te ajudar com: 👋\n\n🗓️ Agendamento de consultas\n📄 Consulta de exames\n✈️ TFD (Tratamento Fora de Domicílio)\n📍 Unidades de saúde\n📞 Contato com atendentes\n\nO que você precisa?',
       suggestions: ['Agendar consulta', 'Consultar exames', 'Unidades de saúde']
     };
   };
@@ -198,15 +251,15 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       {
         id: '1',
         role: 'assistant',
-        content: 'Olá! Sou o assistente digital da SEMUS Bacabal. Como posso ajudá-lo hoje?',
+        content: 'Olá! Sou o Assistente Virtual da Saúde de Bacabal 👋 Como posso te ajudar hoje?',
         timestamp: new Date(),
         type: 'options',
         options: [
-          'Agendar consulta',
-          'Consultar exames',
-          'Informações sobre programas',
-          'Unidades de saúde',
-          'Falar com atendente'
+          'Agendar consulta 🗓️',
+          'Consultar exames 📄',
+          'TFD (Tratamento Fora de Domicílio) ✈️',
+          'Unidades de saúde 📍',
+          'Falar com atendente 📞'
         ]
       }
     ]);
@@ -217,8 +270,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         messages,
         isLoading,
-        apiKey,
-        setApiKey: updateApiKey,
+        apiConfig,
+        setApiConfig: updateApiConfig,
         sendMessage,
         clearChat
       }}

@@ -1,10 +1,9 @@
-
 import { useState, useRef, useEffect } from 'react';
-import { Send, Bot, ArrowLeft, Settings, Eye, EyeOff, MoreVertical } from 'lucide-react';
+import { Send, Bot, ArrowLeft, Settings, Eye, EyeOff, MoreVertical, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Card } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ChatMessage from './ChatMessage';
 import QuickActions from './QuickActions';
 import VoiceInput from './VoiceInput';
@@ -13,14 +12,14 @@ import { useChatContext } from '../contexts/ChatContext';
 const ChatInterface = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [showApiKey, setShowApiKey] = useState(false);
-  const [tempApiKey, setTempApiKey] = useState('');
-  const { messages, isLoading, apiKey, setApiKey, sendMessage, clearChat } = useChatContext();
+  const [tempApiConfig, setTempApiConfig] = useState<{ provider: 'gemini' | 'openai' | 'claude'; key: string }>({ provider: 'gemini', key: '' });
+  const { messages, isLoading, apiConfig, setApiConfig, sendMessage, clearChat } = useChatContext();
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setTempApiKey(apiKey);
-  }, [apiKey]);
+    setTempApiConfig(apiConfig);
+  }, [apiConfig]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -45,13 +44,22 @@ const ChatInterface = () => {
     }
   };
 
-  const handleSaveApiKey = () => {
-    setApiKey(tempApiKey);
+  const handleSaveApiConfig = () => {
+    setApiConfig(tempApiConfig);
     setShowSettings(false);
   };
 
   const handleBackToWelcome = () => {
     window.location.reload();
+  };
+
+  const getProviderName = (provider: string) => {
+    switch (provider) {
+      case 'gemini': return 'Google Gemini';
+      case 'openai': return 'OpenAI ChatGPT';
+      case 'claude': return 'Anthropic Claude';
+      default: return provider;
+    }
   };
 
   return (
@@ -74,7 +82,7 @@ const ChatInterface = () => {
             <div>
               <h3 className="font-semibold text-lg">Nova Bacabal</h3>
               <p className="text-xs text-white/90">
-                {apiKey ? 'IA Conectada • Online' : 'Modo Local • Online'}
+                {apiConfig.key ? `${getProviderName(apiConfig.provider)} • Online` : 'Modo Local • Online'}
               </p>
             </div>
           </div>
@@ -95,17 +103,44 @@ const ChatInterface = () => {
       {showSettings && (
         <div className="p-4 border-b bg-gradient-orange-subtle shadow-sm backdrop-blur-sm">
           <div className="max-w-md mx-auto space-y-4">
-            <div>
-              <label className="text-sm font-medium text-nova-bacabal-orange mb-2 block">
-                Chave da API Gemini (opcional):
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-nova-bacabal-orange block">
+                Configuração de IA (opcional):
               </label>
-              <div className="flex space-x-2">
-                <div className="relative flex-1">
+              
+              {/* Seletor de Provedor */}
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">
+                  Provedor de IA:
+                </label>
+                <Select
+                  value={tempApiConfig.provider}
+                  onValueChange={(value: 'gemini' | 'openai' | 'claude') => 
+                    setTempApiConfig(prev => ({ ...prev, provider: value }))
+                  }
+                >
+                  <SelectTrigger className="bg-white border-nova-bacabal-orange/20 focus:border-nova-bacabal-orange rounded-xl">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="gemini">🔵 Google Gemini</SelectItem>
+                    <SelectItem value="openai">🟢 OpenAI ChatGPT</SelectItem>
+                    <SelectItem value="claude">🟣 Anthropic Claude</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Campo de API Key */}
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">
+                  Chave da API {getProviderName(tempApiConfig.provider)}:
+                </label>
+                <div className="relative">
                   <Input
                     type={showApiKey ? "text" : "password"}
-                    value={tempApiKey}
-                    onChange={(e) => setTempApiKey(e.target.value)}
-                    placeholder="Cole sua API key do Google Gemini aqui"
+                    value={tempApiConfig.key}
+                    onChange={(e) => setTempApiConfig(prev => ({ ...prev, key: e.target.value }))}
+                    placeholder={`Cole sua API key do ${getProviderName(tempApiConfig.provider)} aqui`}
                     className="pr-10 bg-white border-nova-bacabal-orange/20 focus:border-nova-bacabal-orange focus:ring-nova-bacabal-orange/20 rounded-xl"
                   />
                   <Button
@@ -120,18 +155,20 @@ const ChatInterface = () => {
                 </div>
               </div>
             </div>
+
             <div className="flex space-x-2">
-              <Button size="sm" onClick={handleSaveApiKey} className="flex-1 bg-gradient-orange hover:bg-gradient-orange-dark shadow-orange rounded-xl">
+              <Button size="sm" onClick={handleSaveApiConfig} className="flex-1 bg-gradient-orange hover:bg-gradient-orange-dark shadow-orange rounded-xl">
                 Salvar Configurações
               </Button>
               <Button size="sm" variant="outline" onClick={clearChat} className="border-nova-bacabal-orange/30 text-nova-bacabal-orange hover:bg-nova-bacabal-orange/5 rounded-xl">
                 Limpar Chat
               </Button>
             </div>
-            {!apiKey && (
+            
+            {!apiConfig.key && (
               <div className="bg-nova-bacabal-orange/10 border border-nova-bacabal-orange/30 rounded-xl p-3">
                 <p className="text-xs text-nova-bacabal-orange">
-                  💡 O chat funciona sem API key, mas com a chave do Gemini as respostas serão mais inteligentes
+                  💡 O chat funciona sem API key, mas com uma chave de IA as respostas serão mais inteligentes
                 </p>
               </div>
             )}
