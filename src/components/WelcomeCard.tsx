@@ -26,8 +26,8 @@ const WelcomeCard = ({ onStartChat }: WelcomeCardProps) => {
     },
     {
       icon: <Clock className="h-6 w-6 text-nova-bacabal-orange" />,
-      title: "Horários de Funcionamento",
-      description: "Consulte horários das unidades"
+      title: "Farmácias de Plantão",
+      description: "Consulte as farmácias em funcionamento hoje"
     }
   ];
 
