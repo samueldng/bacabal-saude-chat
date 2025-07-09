@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, ArrowLeft, Settings, Eye, EyeOff, MoreVertical, ChevronDown } from 'lucide-react';
+const botIcon = '/lovable-uploads/5717a54e-e75d-4e85-9b28-5833401e8b64.png';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -77,7 +78,7 @@ const ChatInterface = () => {
           </Button>
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg border border-white/30">
-              <Bot className="h-6 w-6 text-white" />
+              <img src={botIcon} alt="Bot" className="h-6 w-6" />
             </div>
             <div>
               <h3 className="font-semibold text-lg">Nova Bacabal</h3>
@@ -197,7 +198,7 @@ const ChatInterface = () => {
               <div className="flex justify-start">
                 <div className="bg-white rounded-2xl p-4 shadow-orange max-w-xs border border-nova-bacabal-orange/10">
                   <div className="flex items-center space-x-2 text-muted-foreground">
-                    <Bot className="h-4 w-4 text-nova-bacabal-orange" />
+                    <img src={botIcon} alt="Bot" className="h-4 w-4" />
                     <span className="text-sm">Digitando</span>
                     <div className="flex space-x-1">
                       <div className="w-2 h-2 bg-nova-bacabal-orange rounded-full animate-bounce" />

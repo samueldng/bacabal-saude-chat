@@ -1,5 +1,6 @@
 
 import { MessageCircle, Clock, Users, FileText, Heart } from 'lucide-react';
+const botIcon = '/lovable-uploads/5717a54e-e75d-4e85-9b28-5833401e8b64.png';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -45,7 +46,7 @@ const WelcomeCard = ({ onStartChat }: WelcomeCardProps) => {
           size="lg"
           className="bg-gradient-orange hover:bg-gradient-orange-dark text-white px-10 py-4 text-lg rounded-full shadow-orange-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
         >
-          <MessageCircle className="mr-3 h-6 w-6" />
+          <img src={botIcon} alt="Chat" className="mr-3 h-6 w-6" />
           Iniciar Atendimento
         </Button>
       </div>

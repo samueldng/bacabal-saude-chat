@@ -1,5 +1,6 @@
 
 import { User, Bot } from 'lucide-react';
+const botIcon = '/lovable-uploads/5717a54e-e75d-4e85-9b28-5833401e8b64.png';
 import { Button } from '@/components/ui/button';
 
 interface Message {
@@ -29,7 +30,7 @@ const ChatMessage = ({ message, onOptionClick, onSuggestionClick }: ChatMessageP
           isBot ? 'bg-white border-2 border-nova-bacabal-orange/20' : 'bg-gradient-orange'
         }`}>
           {isBot ? (
-            <Bot className="h-5 w-5 text-nova-bacabal-orange" />
+            <img src={botIcon} alt="Bot" className="h-5 w-5" />
           ) : (
             <User className="h-5 w-5 text-white" />
           )}
