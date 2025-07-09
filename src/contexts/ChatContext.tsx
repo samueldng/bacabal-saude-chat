@@ -64,7 +64,15 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const callAIProvider = async (content: string, config: ApiConfig): Promise<{ text: string; suggestions?: string[] }> => {
+    const today = new Date();
+    const currentDay = today.getDate();
+    const currentMonth = today.getMonth() + 1; // Janeiro é 0
+    const currentYear = today.getFullYear();
+    const todayFormatted = `${currentDay}/${currentMonth.toString().padStart(2, '0')}/${currentYear}`;
+    
     const systemPrompt = `VOCÊ É O ASSISTENTE VIRTUAL DA SAÚDE DE BACABAL
+
+DATA ATUAL: ${todayFormatted} (dia ${currentDay} de julho de 2025)
 
 PERSONA: Seja formal, prestativo, empático e direto. Atendimento de excelência com linguagem clara e profissional, evitando termos técnicos desnecessários.
 
@@ -94,12 +102,12 @@ UNIDADES DE SAÚDE:
 - UBS Vila São João: R. Três, 59
 
 FARMÁCIAS DE PLANTÃO - JULHO 2025:
-IMPORTANTE: Para perguntas sobre farmácias de plantão, consulte a data atual e forneça as farmácias exatas do dia. Inclua nome, endereço e telefone.
+REGRA CRÍTICA: Quando perguntarem sobre farmácias de plantão "hoje" ou sem especificar data, use SEMPRE o dia atual (${currentDay}). Responda de forma DIRETA e OBJETIVA com as farmácias exatas do dia.
 
 Dia 1 e 18: DROGARIA MAIS (R. 11, 38 A, Vila São João - 98138-9754) | DROGARIA DESCONTÃO (Trav. da Mangueira, 371, Rodoviária - 98263-8528)
 Dia 2 e 19: FARMÁCIA CONFIANÇA (R. Getúlio Vargas, 350, Centro - 98809-2240) | FARMÁCIA TEM TEM (Trav. da Mangueira, 132, Centro/Rodoviária - 98218-1204)
 Dia 3 e 20: FARMÁCIA SANTO AMARO (R. Osvaldo Cruz, 115, Centro - 99178-5165) | FARMÁCIA CANAÃ 2 (R. Magalhães de Almeida, 725, Centro - 98279-0037) | DROGARIA BACABAL (Trav. Carlos Pereira, 271, Rodoviária - 98149-5664)
-Dia 4 e 21: DROGARIA GLOBO (R. Getúlio Vargas, 02, Centro - 98417-4899) | FARMÁCIA PAGUE MENOS (BR-316, KM-361, 103, Est. da Bela Vista - 99989-6077)
+Dia 4 e 21: DROGARIA GLOBO (R. Getúlio Vargas, 02, Centro - 98417-4899) | FARMÁCIA PAGUE MENOS (BR-316, KM-361, Nº 103 / EST. DA BELA VISTA - 99989-6077)
 Dia 5 e 22: DROGARIA POUPE BRASIL (R. Getúlio Vargas, 252, Centro - 99196-0321) | MEDICAL FARMA (Trav. Carlos Pereira, 355, Rodoviária - 98269-1468) | HÍPER POPULAR DROGARIAS (Est. da Bela Vista, 02, Vila Pedro Brito - 99156-5873)
 Dia 6 e 23: ULTRA POPULAR (R. Getúlio Vargas, 121, Centro - 98481-4832) | FARMAVIDA (Av. B, 06, Vila Frei Solano - 98545-3271) | DROGARIA CENTRAL (Trav. Carlos Pereira, 289, Rodoviária - 98430-2050)
 Dia 7 e 24: DROGASIL (R. Getúlio Vargas, 307, LJ-A, Centro - 99168-6445) | NOVA FARMÁCIA PREÇO BAIXO (Est. da Bela Vista, 03, Vl Coelho Dias - 98168-9272)
@@ -115,6 +123,15 @@ Dia 16: FARMA POPULAR (Est. da Bela Vista, 06, Vl Coelho Dias - 98419-7851) | DR
 Dia 17: FARMÁCIA PAGUE MENOS (R. Getúlio Vargas, 25, Centro - 98127-2767) | B. G. DROGARIAS (R. São Francisco, 52 A, Cohabinha - 98303-7899)
 
 INFORMAÇÃO CRÍTICA: Partos APENAS no Hospital Geral, não na UPA.
+
+EXEMPLO DE RESPOSTA PARA FARMÁCIAS DE PLANTÃO:
+Se hoje for dia 9: "Farmácias de plantão hoje (9/07):
+
+📍 FABMED DROGARIA - R. Magalhães de Almeida, 469 A, Centro - 📞 98438-5411
+📍 DROGARIA SANTA LUZIA - R. Cleomenes Falcão, 632, Esperança - 📞 3621-2318  
+📍 DROGARIAS BEM POPULAR - Trav. Carlos Pereira, 339, Rodoviária - 📞 98109-6220
+
+Precisa de mais informações?"
 
 Pergunta: ${content}`;
 
@@ -560,7 +577,7 @@ Pergunta: ${content}`;
     }
     
     return {
-      text: 'Serviços disponíveis:\n\n🗓️ Agendamento de consultas\n📄 Consulta de exames\n✈️ TFD\n📍 Unidades de saúde\n\nO que precisa?',
+      text: 'Serviços disponíveis:\n\n🗓️ Agendamento de consultas\n📄 Consulta de exames\n✈️ TFD\n📍 Unidades de saúde\n💊 Farmácias de plantão\n\nO que precisa?',
       suggestions: ['Agendar consulta', 'Consultar exames', 'Ver unidades']
     };
   };
@@ -578,6 +595,7 @@ Pergunta: ${content}`;
           'Consultar exames 📄',
           'TFD (Tratamento Fora de Domicílio) ✈️',
           'Unidades de saúde 📍',
+          'Farmácias de plantão 💊',
           'Falar com atendente 📞'
         ]
       }
