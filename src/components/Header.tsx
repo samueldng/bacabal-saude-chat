@@ -1,5 +1,5 @@
 
-import { Heart, Phone, MapPin } from 'lucide-react';
+import { Phone, MapPin } from 'lucide-react';
 
 const Header = () => {
   return (
@@ -7,12 +7,12 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className="bg-gradient-orange p-3 rounded-full shadow-orange">
-              <Heart className="h-8 w-8 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gradient-orange">Nova Bacabal</h1>
-              <p className="text-sm text-muted-foreground font-medium">Secretaria Municipal de Saúde</p>
+            <div className="flex-shrink-0">
+              <img 
+                src="/lovable-uploads/fdb5c86c-8e42-40d1-9764-5e62391414c8.png" 
+                alt="Nova Bacabal - Secretaria de Saúde" 
+                className="h-16 w-auto"
+              />
             </div>
           </div>
           <div className="hidden md:flex items-center space-x-6 text-sm text-muted-foreground">
