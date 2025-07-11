@@ -1,7 +1,8 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Mic, MicOff, Square } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { toast } from '@/hooks/use-toast';
 
 interface VoiceInputProps {
   onVoiceMessage?: (audioBlob: Blob) => void;
@@ -11,17 +12,91 @@ interface VoiceInputProps {
 const VoiceInput: React.FC<VoiceInputProps> = ({ onVoiceMessage, disabled }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const startRecording = () => {
-    // Preparado para implementação futura
-    setIsRecording(true);
-    console.log('Gravação de áudio será implementada em breve');
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, []);
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          sampleRate: 44100
+        } 
+      });
+      
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus'
+      });
+      
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+      
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+      
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm;codecs=opus' });
+        if (onVoiceMessage && audioBlob.size > 0) {
+          onVoiceMessage(audioBlob);
+        }
+        
+        // Cleanup
+        stream.getTracks().forEach(track => track.stop());
+      };
+      
+      mediaRecorder.start();
+      setIsRecording(true);
+      setRecordingTime(0);
+      
+      // Start timer
+      timerRef.current = setInterval(() => {
+        setRecordingTime(prev => prev + 1);
+      }, 1000);
+      
+      toast({
+        title: "Gravação iniciada",
+        description: "Fale agora, sua mensagem está sendo gravada."
+      });
+      
+    } catch (error) {
+      console.error('Erro ao acessar microfone:', error);
+      toast({
+        title: "Erro no microfone",
+        description: "Não foi possível acessar o microfone. Verifique as permissões.",
+        variant: "destructive"
+      });
+    }
   };
 
   const stopRecording = () => {
-    setIsRecording(false);
-    setRecordingTime(0);
-    console.log('Parando gravação');
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      setRecordingTime(0);
+      
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      
+      toast({
+        title: "Gravação finalizada",
+        description: "Processando sua mensagem de áudio..."
+      });
+    }
   };
 
   return (

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { toast } from '@/hooks/use-toast';
 import ChatMessage from './ChatMessage';
 import QuickActions from './QuickActions';
 import VoiceInput from './VoiceInput';
@@ -36,6 +37,29 @@ const ChatInterface = () => {
 
     await sendMessage(messageToSend);
     setInputValue('');
+  };
+
+  const handleVoiceMessage = async (audioBlob: Blob) => {
+    try {
+      // Convert audio to base64
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64Audio = reader.result as string;
+        const base64Data = base64Audio.split(',')[1]; // Remove data:audio/webm;base64, prefix
+        
+        // Send to AI with audio prompt
+        const audioPrompt = `[ÁUDIO TRANSCRITO] Transcreva e responda a esta mensagem de áudio sobre os serviços de saúde de Bacabal. Base64: ${base64Data}`;
+        await sendMessage(audioPrompt);
+      };
+      reader.readAsDataURL(audioBlob);
+    } catch (error) {
+      console.error('Erro ao processar áudio:', error);
+      toast({
+        title: "Erro no áudio",
+        description: "Não foi possível processar sua mensagem de áudio.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -233,7 +257,7 @@ const ChatInterface = () => {
                 className="flex-1 border-none bg-transparent focus:ring-0 focus:border-none text-foreground placeholder-muted-foreground"
               />
               {!inputValue.trim() && (
-                <VoiceInput disabled={isLoading} />
+                <VoiceInput disabled={isLoading} onVoiceMessage={handleVoiceMessage} />
               )}
             </div>
           </div>
