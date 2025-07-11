@@ -20,7 +20,7 @@ interface ChatContextType {
   isLoading: boolean;
   apiConfig: ApiConfig;
   setApiConfig: (config: ApiConfig) => void;
-  sendMessage: (content: string) => Promise<void>;
+  sendMessage: (content: string, audioData?: { mimeType: string; data: string }) => Promise<void>;
   clearChat: () => void;
 }
 
@@ -63,7 +63,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('ai-api-config', JSON.stringify(config));
   }, []);
 
-  const callAIProvider = async (content: string, config: ApiConfig): Promise<{ text: string; suggestions?: string[] }> => {
+  const callAIProvider = async (content: string, config: ApiConfig, audioData?: { mimeType: string; data: string }): Promise<{ text: string; suggestions?: string[] }> => {
     const today = new Date();
     const currentDay = today.getDate();
     const currentMonth = today.getMonth() + 1; // Janeiro é 0
@@ -157,11 +157,24 @@ Precisa de mais informações?"
 Pergunta: ${content}`;
 
     if (config.provider === 'gemini') {
+      // Preparar as partes do conteúdo
+      const parts: any[] = [{ text: systemPrompt }];
+      
+      // Se há dados de áudio, adicionar como inline_data
+      if (audioData) {
+        parts.push({
+          inline_data: {
+            mime_type: audioData.mimeType,
+            data: audioData.data
+          }
+        });
+      }
+      
       const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${config.key}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: systemPrompt }] }],
+          contents: [{ parts }],
           generationConfig: { temperature: 0.7, topK: 40, topP: 0.95, maxOutputTokens: 1024 },
           safetySettings: [
             { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
@@ -235,7 +248,7 @@ Pergunta: ${content}`;
     throw new Error('Provedor de IA não suportado');
   };
 
-  const sendMessage = useCallback(async (content: string) => {
+  const sendMessage = useCallback(async (content: string, audioData?: { mimeType: string; data: string }) => {
     if (!content.trim()) return;
 
     const userMessage: Message = {
@@ -253,7 +266,7 @@ Pergunta: ${content}`;
       
       if (apiConfig.key) {
         try {
-          response = await callAIProvider(content, apiConfig);
+          response = await callAIProvider(content, apiConfig, audioData);
         } catch (error) {
           console.warn('Erro na API, usando modo local:', error);
           response = await getLocalResponse(content);

@@ -47,9 +47,12 @@ const ChatInterface = () => {
         const base64Audio = reader.result as string;
         const base64Data = base64Audio.split(',')[1]; // Remove data:audio/webm;base64, prefix
         
-        // Send to AI with audio prompt
-        const audioPrompt = `[ÁUDIO TRANSCRITO] Transcreva e responda a esta mensagem de áudio sobre os serviços de saúde de Bacabal. Base64: ${base64Data}`;
-        await sendMessage(audioPrompt);
+        // Send audio data directly to AI
+        const audioPrompt = "Transcreva e responda a esta mensagem de áudio sobre os serviços de saúde de Bacabal.";
+        await sendMessage(audioPrompt, {
+          mimeType: 'audio/webm',
+          data: base64Data
+        });
       };
       reader.readAsDataURL(audioBlob);
     } catch (error) {
