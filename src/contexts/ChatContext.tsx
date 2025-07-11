@@ -80,6 +80,8 @@ FORMATO: Respostas breves e objetivas. Use parágrafos curtos. Termine com pergu
 
 OBJETIVO: Fornecer informações precisas sobre serviços da Secretaria de Saúde de Bacabal. Para dúvidas não cobertas, direcione para atendimento presencial.
 
+${audioData ? 'ATENÇÃO: Este é um áudio que você deve primeiro transcrever e depois responder ao que foi perguntado.' : ''}
+
 BASE DE CONHECIMENTO COMPLETA:
 
 CONSULTAS/EXAMES: "Vá à UBS mais próxima com cartão SUS e documento. O profissional fará o encaminhamento necessário 👍"
@@ -170,7 +172,7 @@ Pergunta: ${content}`;
         });
       }
       
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${config.key}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${config.key}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
