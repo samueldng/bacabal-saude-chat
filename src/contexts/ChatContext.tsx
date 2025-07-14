@@ -252,12 +252,48 @@ Pergunta: ${content}`;
   };
 
   const sendMessage = async (text: string, audioData?: { mimeType: string; data: string }) => {
-    if (!apiConfig.key) {
-      toast({
-        title: "Configuração necessária",
-        description: "Configure sua chave de API nas configurações",
-        variant: "destructive"
-      });
+    if (!apiConfig.key || apiConfig.key.trim().length < 10) {
+      // Usar fallback offline quando API key não estiver configurada corretamente
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        text: audioData ? "🎤 Mensagem de áudio" : text,
+        isUser: true,
+        timestamp: new Date().toISOString()
+      };
+
+      setMessages(prev => [...prev, userMessage]);
+      setIsLoading(true);
+
+      // Simular delay de processamento
+      setTimeout(() => {
+        const offlineResponse = getOfflineResponse(text);
+        
+        const botMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          text: offlineResponse.text,
+          isUser: false,
+          timestamp: new Date().toISOString(),
+          suggestions: offlineResponse.suggestions
+        };
+
+        setMessages(prev => [...prev, botMessage]);
+
+        // Se foi uma mensagem de áudio, reproduzir resposta em áudio automaticamente
+        if (audioData) {
+          setTimeout(() => {
+            playAudioResponse(offlineResponse.text);
+          }, 500);
+        }
+
+        toast({
+          title: "Modo offline ativo",
+          description: "Configure sua chave de API para usar o modo online",
+          variant: "default"
+        });
+
+        setIsLoading(false);
+      }, 800);
+      
       return;
     }
 
