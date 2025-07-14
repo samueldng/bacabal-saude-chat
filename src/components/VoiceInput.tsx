@@ -34,9 +34,19 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ onVoiceMessage, disabled }) => 
         } 
       });
       
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'audio/webm;codecs=opus'
-      });
+      // Verificar formatos suportados e usar o melhor disponível
+      let mimeType = 'audio/webm;codecs=opus';
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = 'audio/webm';
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+          mimeType = 'audio/mp4';
+          if (!MediaRecorder.isTypeSupported(mimeType)) {
+            mimeType = ''; // Deixar o navegador escolher
+          }
+        }
+      }
+
+      const mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
       
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
@@ -48,7 +58,15 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ onVoiceMessage, disabled }) => 
       };
       
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm;codecs=opus' });
+        const finalMimeType = mimeType || 'audio/webm';
+        const audioBlob = new Blob(audioChunksRef.current, { type: finalMimeType });
+        
+        console.log('Áudio capturado:', {
+          size: audioBlob.size,
+          type: audioBlob.type,
+          duration: recordingTime
+        });
+        
         if (onVoiceMessage && audioBlob.size > 0) {
           onVoiceMessage(audioBlob);
         }

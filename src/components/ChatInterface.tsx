@@ -216,7 +216,13 @@ const ChatInterface = () => {
             {messages.map((message) => (
               <ChatMessage 
                 key={message.id} 
-                message={message} 
+                message={{
+                  id: message.id,
+                  role: message.isUser ? 'user' : 'assistant',
+                  content: message.text,
+                  timestamp: new Date(message.timestamp),
+                  suggestions: message.suggestions
+                }}
                 onOptionClick={handleSendMessage}
                 onSuggestionClick={handleSendMessage}
               />

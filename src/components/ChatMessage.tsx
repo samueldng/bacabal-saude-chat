@@ -2,6 +2,7 @@
 import { User, Bot } from 'lucide-react';
 const botIcon = '/lovable-uploads/5717a54e-e75d-4e85-9b28-5833401e8b64.png';
 import { Button } from '@/components/ui/button';
+import AudioPlayer from './AudioPlayer';
 
 interface Message {
   id: string;
@@ -54,11 +55,14 @@ const ChatMessage = ({ message, onOptionClick, onSuggestionClick }: ChatMessageP
           }} />
           
           <div className="relative z-10">
-            <p className={`text-sm leading-relaxed whitespace-pre-line ${
-              isBot ? 'text-gray-800' : 'text-white'
-            }`}>
-              {message.content}
-            </p>
+            <div className="flex items-start justify-between gap-2">
+              <p className={`text-sm leading-relaxed whitespace-pre-line flex-1 ${
+                isBot ? 'text-gray-800' : 'text-white'
+              }`}>
+                {message.content}
+              </p>
+              <AudioPlayer text={message.content} isBot={isBot} />
+            </div>
             
             {/* Options com design moderno */}
             {message.type === 'options' && message.options && (
