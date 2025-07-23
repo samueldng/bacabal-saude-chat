@@ -73,6 +73,7 @@ const ChatInterface = () => {
   };
 
   const handleSaveApiConfig = () => {
+    console.log('Salvando config:', tempApiConfig);
     setApiConfig(tempApiConfig);
     setShowSettings(false);
   };
@@ -110,7 +111,7 @@ const ChatInterface = () => {
             <div>
               <h3 className="font-semibold text-lg">Nova Bacabal</h3>
               <p className="text-xs text-white/90">
-                {apiConfig.key ? `${getProviderName(apiConfig.provider)} • Online` : 'Modo Local • Online'}
+                {apiConfig.key ? `${getProviderName(apiConfig.provider)} • Online` : 'Modo Local • Offline'}
               </p>
             </div>
           </div>
